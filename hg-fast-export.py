@@ -137,6 +137,11 @@ def export_file_contents(ctx,manifest,files):
   if max>cfg_export_boundary:
     sys.stderr.write('Exported %d/%d files\n' % (count,max))
 
+special_names = [
+  "Copper",
+  "Titanium"
+]
+
 def sanitize_name(name,what="branch"):
   """Sanitize input roughly according to git-check-ref-format(1)"""
 
@@ -145,6 +150,56 @@ def sanitize_name(name,what="branch"):
     return name
 
   n=name
+  if (what == "branch"):
+    name_components = n.split()
+    cleaned_components = []
+    for component in name_components:
+      if component == "-":
+        if cleaned_components[-1] == "/":
+          continue
+        else:
+          component = "/"
+
+      split_components = component.split("-")
+      if len(split_components) > 1:
+        cleaned_components.append(split_components[0])
+        cleaned_components.append("/")
+        cleaned_components.append(split_components[1])
+      else:
+        if component[0] == component[0].upper():
+          cleaned_components.append(component)
+        elif component == "default":
+          cleaned_components.append(component)
+        else:
+          cleaned_components.append(component.title())
+
+      if component in special_names and len(name_components) > 1 and (cleaned_components[-1] != "/"):
+        cleaned_components.append("/")
+
+    n="".join(cleaned_components)
+    #print(name, n)
+
+  elif (what == "tag"):
+    name_components = n.split('-')
+    name_components = [x for x in name_components if x]
+
+    cleaned_components = []
+    for component in name_components:
+      if component and re.match('\D', component[0]):
+        cleaned_components.append(component)
+        cleaned_components.append("/")
+      else:
+        cleaned_components.append(component)
+
+    n="-".join(cleaned_components)
+    n=n.replace("-/-", "/")
+    n=n.replace("-/", "")
+    n=n.replace("/-", "")
+    if (n[-1] == "/" or n[-1] == "-"):
+      n = n[0:-1]
+    #print(name, n)
+
+
   p=re.compile('([[ ~^:?*]|\.\.)')
   n=p.sub('_', n)
   if n[-1] in ('/', '.'): n=n[:-1]+'_'
