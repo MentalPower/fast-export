@@ -181,9 +181,10 @@ def sanitize_name(name,what="branch"):
     name_components = n.replace("-", " ").replace("_", " ").replace('"', '').replace("'", "").split()
     print(name_components)
     cleaned_components = []
-    if n.lower() == n:
+    if n.lower() == n and n not in ['master', 'default']:
       cleaned_components.append("Legacy")
       cleaned_components.append("/")
+
     for index, component in enumerate(name_components):
       if component[0] == component[0].upper():
         cleaned_components.append(component)
