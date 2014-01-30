@@ -138,8 +138,35 @@ def export_file_contents(ctx,manifest,files):
     sys.stderr.write('Exported %d/%d files\n' % (count,max))
 
 special_names = [
+  "Argon",
+  "Ascalon",
+  "Azeroth",
+  "Carbon",
+  "Chernarus",
+  "CobaltDataImporter",
   "Copper",
-  "Titanium"
+  "CurseBlocks",
+  "CurseforgeSyncer",
+  "Dominaria",
+  "Elerium",
+  "Hearth",
+  "Importer",
+  "Iron",
+  "Marriland",
+  "Mercury",
+  "Nitrogen",
+  "Noxia",
+  "Osmium",
+  "Radon",
+  "Syncer",
+  "Tin",
+  "Titanium",
+  "Touchdown",
+  "Tungsten",
+  "Vespene",
+  "Vox",
+  "Xenon",
+  "Yttrium",
 ]
 
 def sanitize_name(name,what="branch"):
@@ -151,36 +178,39 @@ def sanitize_name(name,what="branch"):
 
   n=name
   if (what == "branch"):
-    name_components = n.split()
+    name_components = n.replace("-", " ").replace("_", " ").replace('"', '').replace("'", "").split()
+    print(name_components)
     cleaned_components = []
-    for component in name_components:
-      if component == "-":
-        if cleaned_components[-1] == "/":
-          continue
-        else:
-          component = "/"
-
-      component = component.replace('"', '').replace("'", "")
-
-      split_components = component.split("-")
-      if len(split_components) > 1:
-        cleaned_components.append(split_components[0])
-        cleaned_components.append("/")
-        cleaned_components.append(split_components[1])
+    if n.lower() == n:
+      cleaned_components.append("Legacy")
+      cleaned_components.append("/")
+    for index, component in enumerate(name_components):
+      if component[0] == component[0].upper():
+        cleaned_components.append(component)
+      elif component == "default" and len(cleaned_components) == 0:
+        cleaned_components.append(component)
+      elif component == "master" and len(cleaned_components) == 0:
+        cleaned_components.append(component)
       else:
-        if component[0] == component[0].upper():
-          cleaned_components.append(component)
-        elif component == "default":
-          cleaned_components.append(component)
-        elif component == "master":
-          cleaned_components.append(component)
-        else:
-          cleaned_components.append(component.title())
+        cleaned_components.append(component.title())
 
       if component in special_names and len(name_components) > 1 and (cleaned_components[-1] != "/"):
         cleaned_components.append("/")
 
+    if cleaned_components[-1] == "/":
+      cleaned_components.pop(-1)
+
+    if cleaned_components[0].lower() == "default" and len(cleaned_components) > 1:
+      cleaned_components[0] = "Legacy"
+      cleaned_components.insert(1, "/")
+
+    if len(cleaned_components) == 1 and cleaned_components[0] in special_names:
+      cleaned_components.append("/")
+      cleaned_components.append("master")
     n="".join(cleaned_components)
+
+    if n in special_names:
+      n += "/master"
     #print(name, n)
 
   elif (what == "tag"):
