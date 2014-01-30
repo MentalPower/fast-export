@@ -160,6 +160,8 @@ def sanitize_name(name,what="branch"):
         else:
           component = "/"
 
+      component = component.replace('"', '').replace("'", "")
+
       split_components = component.split("-")
       if len(split_components) > 1:
         cleaned_components.append(split_components[0])
@@ -169,6 +171,8 @@ def sanitize_name(name,what="branch"):
         if component[0] == component[0].upper():
           cleaned_components.append(component)
         elif component == "default":
+          cleaned_components.append(component)
+        elif component == "master":
           cleaned_components.append(component)
         else:
           cleaned_components.append(component.title())
