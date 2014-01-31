@@ -179,7 +179,6 @@ def sanitize_name(name,what="branch"):
   n=name
   if (what == "branch"):
     name_components = n.replace("-", " ").replace("_", " ").replace('"', '').replace("'", "").split()
-    print(name_components)
     cleaned_components = []
     if n.lower() == n and n not in ['master', 'default']:
       cleaned_components.append("Legacy")
