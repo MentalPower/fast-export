@@ -7,6 +7,7 @@ from mercurial import node
 from hg2git import setup_repo,fixup_user,get_branch,get_changeset
 from hg2git import load_cache,save_cache,get_git_sha1,set_default_branch,set_origin_name
 from optparse import OptionParser
+from datetime import datetime
 import re
 import sys
 import os
@@ -185,7 +186,16 @@ def sanitize_name(name,what="branch"):
       cleaned_components.append("/")
 
     for index, component in enumerate(name_components):
-      if component[0] == component[0].upper():
+
+      date_component = None
+      try:
+        date_component = datetime.strptime(component, "%Y/%m/%d")
+      except ValueError, e:
+        pass
+
+      if date_component:
+        cleaned_components.append(date_component.strftime("%Y%m%d"))
+      elif component[0] == component[0].upper():
         cleaned_components.append(component)
       elif component == "default" and len(cleaned_components) == 0:
         cleaned_components.append(component)
@@ -225,12 +235,19 @@ def sanitize_name(name,what="branch"):
       else:
         cleaned_components.append(component)
 
+    if len(cleaned_components) == 1 and cleaned_components[0] in special_names:
+      cleaned_components.append("/")
+      cleaned_components.append("master")
+
     n="-".join(cleaned_components)
     n=n.replace("-/-", "/")
     n=n.replace("-/", "")
     n=n.replace("/-", "")
     if (n[-1] == "/" or n[-1] == "-"):
       n = n[0:-1]
+
+    if n in special_names:
+      n += "/master"
     #print(name, n)
 
 
