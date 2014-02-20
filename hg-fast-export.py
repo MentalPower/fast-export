@@ -159,6 +159,7 @@ special_names = [
   "Noxia",
   "Osmium",
   "Radon",
+  "Storm",
   "Syncer",
   "Tin",
   "Titanium",
