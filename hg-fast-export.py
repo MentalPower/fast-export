@@ -238,7 +238,7 @@ def sanitize_name(name,what="branch"):
 
     if len(cleaned_components) == 1 and cleaned_components[0] in special_names:
       cleaned_components.append("/")
-      cleaned_components.append("master")
+      cleaned_components.append("base")
 
     n="-".join(cleaned_components)
     n=n.replace("-/-", "/")
@@ -248,7 +248,7 @@ def sanitize_name(name,what="branch"):
       n = n[0:-1]
 
     if n in special_names:
-      n += "/master"
+      n += "/base"
     #print(name, n)
 
 
